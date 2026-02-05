@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:accountdb}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgres}
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      # validate: Only validates if tables exist, does NOT create anything
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          # Optimization: Groups multiple INSERTs into a single command
+          batch_size: 20
+        # Orders operations for better performance
+        order_inserts: true
+        order_updates: true
+
+logging:
+  level:
+    com.banking.account: INFO
+    org.hibernate.SQL: WARN
