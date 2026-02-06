@@ -1,5 +1,6 @@
 package com.banking.account.domain.model;
 
+import com.banking.account.domain.exception.InsufficientBalanceException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,7 +34,7 @@ public class Account {
     }
 
     if (this.balance.compareTo(amount) < 0) {
-      throw new IllegalArgumentException("Insufficient balance");
+      throw new InsufficientBalanceException(this.id, amount, this.balance);
     }
 
     this.balance = this.balance.subtract(amount);
