@@ -1,6 +1,8 @@
 package com.banking.account.domain.service;
 
 import com.banking.account.api.dto.AccountRequestDTO;
+import com.banking.account.domain.exception.AccountAlreadyExistsException;
+import com.banking.account.domain.exception.AccountNotFoundException;
 import com.banking.account.domain.model.Account;
 import com.banking.account.domain.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +20,7 @@ public class AccountService {
   public Account createAccount(AccountRequestDTO dto) {
     accountRepository.findByCustomerId(dto.customerId())
             .ifPresent(account -> {
-              throw new IllegalArgumentException("Account already exists");
+              throw new AccountAlreadyExistsException("Account already exists");
             });
 
     // Mapper DTO -> Entity
@@ -31,6 +33,6 @@ public class AccountService {
 
   public Account getAccountById(UUID id) {
     return accountRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+            .orElseThrow(() -> new AccountNotFoundException(id));
   }
 }
