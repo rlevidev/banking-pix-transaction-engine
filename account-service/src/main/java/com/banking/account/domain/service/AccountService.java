@@ -20,7 +20,7 @@ public class AccountService {
   public Account createAccount(AccountRequestDTO dto) {
     accountRepository.findByCustomerId(dto.customerId())
             .ifPresent(account -> {
-              throw new AccountAlreadyExistsException("Account already exists");
+              throw new AccountAlreadyExistsException(dto.customerId());
             });
 
     // Mapper DTO -> Entity
