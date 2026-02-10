@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  db-account:
+    image: postgres:16-alpine
+    container_name: db-account
+    environment:
+      - POSTGRES_DB=accountdb
+      - POSTGRES_USER=user_pix
+      - POSTGRES_PASSWORD=password_pix
+    ports:
+      - "5432:5432"
+
+  db-pix-key:
+    image: postgres:16-alpine
+    container_name: db-pix-key
+    environment:
+      - POSTGRES_DB=pixkeydb
+      - POSTGRES_USER=user_pix
+      - POSTGRES_PASSWORD=password_pix
+    ports:
+      - "5433:5432"
+
+  account-service:
+    build:
+      context: ./account-service
+    container_name: account-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db-account
+    environment:
+      - DB_HOST=db-account
+      - DB_PORT=5432
+      - DB_NAME=accountdb
+      - DB_USER=user_pix
+      - DB_PASSWORD=password_pix
+
+  pix-key-service:
+    build:
+      context: ./pix-key-service
+    container_name: pix-key-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - db-pix-key
+      - account-service
+    environment:
+      - DB_HOST=db-pix-key
+      - DB_PORT=5432
+      - DB_NAME=pixkeydb
+      - DB_USER=user_pix
+      - DB_PASSWORD=password_pix
+      - SERVICES_ACCOUNT_URL=http://account-service:8081
+
+networks:
+  default:
+    name: pix-network
