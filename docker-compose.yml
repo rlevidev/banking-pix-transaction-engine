@@ -10,6 +10,12 @@ services:
       - POSTGRES_PASSWORD=password_pix
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "user_pix", "-d", "accountdb", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 
   db-pix-key:
     image: postgres:16-alpine
@@ -20,6 +26,11 @@ services:
       - POSTGRES_PASSWORD=password_pix
     ports:
       - "5433:5432"
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "user_pix", "-d", "pixkeydb", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   account-service:
     build:
@@ -27,8 +38,10 @@ services:
     container_name: account-service
     ports:
       - "8081:8081"
+    restart: on-failure
     depends_on:
-      - db-account
+      db-account:
+        condition: service_healthy
     environment:
       - DB_HOST=db-account
       - DB_PORT=5432
@@ -42,9 +55,12 @@ services:
     container_name: pix-key-service
     ports:
       - "8082:8082"
+    restart: on-failure
     depends_on:
-      - db-pix-key
-      - account-service
+      db-pix-key:
+        condition: service_healthy
+      account-service:
+        condition: service_started
     environment:
       - DB_HOST=db-pix-key
       - DB_PORT=5432
