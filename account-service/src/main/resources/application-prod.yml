@@ -8,8 +8,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
-      # validate: Only validates if tables exist, does NOT create anything
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         jdbc:
