@@ -1,5 +1,5 @@
 # Stage 1: Build
-FROM maven:3.9.6-eclipse-temurin-17 AS build
+FROM docker.io/library/maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
 # Copy the pom.xml and build dependencies
