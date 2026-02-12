@@ -2,5 +2,12 @@ spring:
   application:
     name: transaction-service
 
+services:
+  account:
+    url: http://localhost:8081
+  pix-key:
+    url: http://localhost:8082
+
+
 server:
   port: 8083
