@@ -2,6 +2,7 @@ package com.banking.account.api.controller;
 
 import com.banking.account.api.dto.AccountRequestDTO;
 import com.banking.account.api.dto.AccountResponseDTO;
+import com.banking.account.api.dto.TransactionMovementDTO;
 import com.banking.account.api.mapper.AccountMapper;
 import com.banking.account.domain.model.Account;
 import com.banking.account.domain.service.AccountService;
@@ -31,5 +32,19 @@ public class AccountController {
   public ResponseEntity<AccountResponseDTO> getById(@PathVariable UUID id) {
     Account account = accountService.getAccountById(id);
     return ResponseEntity.ok(accountMapper.toResponseDTO(account));
+  }
+
+  @PatchMapping("/{id}/debit")
+  public ResponseEntity<Void> debit(@PathVariable UUID id, @Valid @RequestBody TransactionMovementDTO movementDTO) {
+    accountService.debit(id, movementDTO.amount());
+
+    return ResponseEntity.noContent().build();
+  }
+
+  @PatchMapping("/{id}/credit")
+  public ResponseEntity<Void> credit(@PathVariable UUID id, @Valid @RequestBody TransactionMovementDTO movementDTO) {
+    accountService.credit(id, movementDTO.amount());
+
+    return ResponseEntity.noContent().build();
   }
 }
