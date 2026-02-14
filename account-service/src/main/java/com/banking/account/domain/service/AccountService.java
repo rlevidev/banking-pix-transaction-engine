@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
@@ -34,5 +35,21 @@ public class AccountService {
   public Account getAccountById(UUID id) {
     return accountRepository.findById(id)
             .orElseThrow(() -> new AccountNotFoundException(id));
+  }
+
+  @Transactional
+  public void debit(UUID id, BigDecimal amount) {
+    Account account = getAccountById(id);
+    account.debit(amount);
+
+    accountRepository.save(account);
+  }
+
+  @Transactional
+  public void credit(UUID id, BigDecimal amount) {
+    Account account = getAccountById(id);
+    account.credit(amount);
+
+    accountRepository.save(account);
   }
 }
