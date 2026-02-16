@@ -1,6 +1,7 @@
 package com.banking.transactionservice.domain.service;
 
 import com.banking.transactionservice.api.dto.TransactionRequestDTO;
+import com.banking.transactionservice.domain.exception.TransactionFailureException;
 import com.banking.transactionservice.domain.model.Transaction;
 import com.banking.transactionservice.domain.model.TransactionStatus;
 import com.banking.transactionservice.domain.repository.TransactionRepository;
@@ -63,7 +64,7 @@ public class TransactionService {
 
         transaction.setStatus(TransactionStatus.REFUNDED);
         log.warn("Transação {} estornada com sucesso (REFUNDED).", transaction.getId());
-        throw new RuntimeException("Falha no destino. Dinheiro estornado.");
+        throw new TransactionFailureException("Falha no destino. Dinheiro estornado.");
       }
     } catch (Exception e) {
       if (transaction.getStatus() != TransactionStatus.REFUNDED) {
