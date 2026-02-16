@@ -1,6 +1,7 @@
 package com.banking.transactionservice.domain.service;
 
 import com.banking.transactionservice.api.dto.TransactionRequestDTO;
+import com.banking.transactionservice.domain.exception.PixKeyNotFoundException;
 import com.banking.transactionservice.domain.exception.TransactionFailureException;
 import com.banking.transactionservice.domain.model.Transaction;
 import com.banking.transactionservice.domain.model.TransactionStatus;
@@ -44,7 +45,7 @@ public class TransactionService {
 
     try {
       UUID destinationAccountId = pixKeyServiceClient.findAccountIdByPixKey(dto.pixKey())
-              .orElseThrow(() -> new RuntimeException("Chave PIX não encontrada"));
+              .orElseThrow(() -> new PixKeyNotFoundException(dto.pixKey()));
 
       transaction.setDestinationAccountId(destinationAccountId);
       transaction.setStatus(TransactionStatus.PROCESSING);
@@ -70,10 +71,11 @@ public class TransactionService {
       if (transaction.getStatus() != TransactionStatus.REFUNDED) {
         transaction.setStatus(TransactionStatus.FAILED);
       }
-
       throw e;
     } finally {
-      return transactionRepository.save(transaction);
+      transactionRepository.save(transaction);
     }
+
+    return transaction;
   }
 }
