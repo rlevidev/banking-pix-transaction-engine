@@ -2,6 +2,7 @@ package com.banking.transactionservice.api.exception;
 
 import com.banking.transactionservice.api.dto.ErrorResponseDTO;
 import com.banking.transactionservice.domain.exception.PixKeyNotFoundException;
+import com.banking.transactionservice.domain.exception.TransactionFailureException;
 import com.banking.transactionservice.domain.exception.TransactionNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,22 @@ public class GlobalExceptionHandler {
 
     ErrorResponseDTO error = ErrorResponseDTO.of(
             HttpStatus.UNPROCESSABLE_ENTITY.value(), // 422
+            "Unprocessable Entity",
+            ex.getMessage(),
+            request.getRequestURI()
+    );
+
+    return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(error);
+  }
+
+  @ExceptionHandler(TransactionFailureException.class)
+  public ResponseEntity<ErrorResponseDTO> handleTransactionFailure(
+          TransactionFailureException ex,
+          HttpServletRequest request) {
+    log.error("Transaction failure (Refunded): {}", ex.getMessage());
+
+    ErrorResponseDTO error = ErrorResponseDTO.of(
+            HttpStatus.UNPROCESSABLE_ENTITY.value(),
             "Unprocessable Entity",
             ex.getMessage(),
             request.getRequestURI()
