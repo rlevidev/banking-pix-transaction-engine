@@ -13,14 +13,14 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Stage 2: Runtime
-FROM eclipse-temurin:17-jre-alpine
+FROM docker.io/library/eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 # Copy the built application from the build stage
 COPY --from=build /app/target/*.jar /app/app.jar
 
 # Expose the application port
-EXPOSE 8080
+EXPOSE 8081
 
 # Run the application with profile "prod"
 CMD ["java", "-jar", "app.jar", "--spring.profiles.active=prod"]
