@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   db-account:
-    image: postgres:16-alpine
+    image: docker.io/library/postgres:16-alpine
     container_name: db-account
     environment:
       - POSTGRES_DB=accountdb
@@ -18,7 +18,7 @@ services:
 
 
   db-pix-key:
-    image: postgres:16-alpine
+    image: docker.io/library/postgres:16-alpine
     container_name: db-pix-key
     environment:
       - POSTGRES_DB=pixkeydb
@@ -28,6 +28,21 @@ services:
       - "5433:5432"
     healthcheck:
       test: [ "CMD", "pg_isready", "-U", "user_pix", "-d", "pixkeydb", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  db-transaction:
+    image: docker.io/library/postgres:16-alpine
+    container_name: db-transaction
+    environment:
+      - POSTGRES_DB=transactiondb
+      - POSTGRES_USER=user_pix
+      - POSTGRES_PASSWORD=password_pix
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "user_pix", "-d", "transactiondb", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -68,6 +83,29 @@ services:
       - DB_USER=user_pix
       - DB_PASSWORD=password_pix
       - SERVICES_ACCOUNT_URL=http://account-service:8081
+
+  transaction-service:
+    build:
+      context: ./transaction-service
+    container_name: transaction-service
+    ports:
+      - "8083:8083"
+    restart: on-failure
+    depends_on:
+      db-transaction:
+        condition: service_healthy
+      account-service:
+        condition: service_started
+      pix-key-service:
+        condition: service_started
+    environment:
+      - DB_HOST=db-transaction
+      - DB_PORT=5432
+      - DB_NAME=transactiondb
+      - DB_USER=user_pix
+      - DB_PASSWORD=password_pix
+      - SERVICES_ACCOUNT_URL=http://account-service:8081
+      - SERVICES_PIX_KEY_URL=http://pix-key-service:8082
 
 networks:
   default:
