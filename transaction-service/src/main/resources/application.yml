@@ -1,13 +1,21 @@
 spring:
   application:
     name: transaction-service
+  profiles:
+    active: dev
 
-services:
-  account:
-    url: http://localhost:8081
-  pix-key:
-    url: http://localhost:8082
-
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    open-in-view: false
 
 server:
   port: 8083
+
+services:
+  account:
+    url: ${SERVICES_ACCOUNT_URL:http://localhost:8081}
+  pix-key:
+    url: ${SERVICES_PIX_KEY_URL:http://localhost:8082}
