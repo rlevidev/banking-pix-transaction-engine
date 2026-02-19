@@ -16,7 +16,9 @@ import java.util.UUID;
         @Index(name = "idx_transaction_source_account", columnList = "source_account_id"),
 
         // Performance: For checking the recipient's account statement
-        @Index(name = "idx_transaction_dest_account", columnList = "destination_account_id")
+        @Index(name = "idx_transaction_dest_account", columnList = "destination_account_id"),
+
+        @Index(name = "idx_transaction_created_at", columnList = "created_at")
 })
 @Getter
 @Setter
